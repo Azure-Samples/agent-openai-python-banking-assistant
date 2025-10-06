@@ -52,8 +52,8 @@ class Container(containers.DeclarativeContainer):
     azure_chat_completion = providers.Singleton(
         AzureChatCompletion,
         credential=providers.Factory(get_azure_credential),
-        deployment_name=settings.AZURE_OPENAI_CHATGPT_DEPLOYMENT,
-        endpoint=f"https://{settings.AZURE_OPENAI_SERVICE}.openai.azure.com/"
+        deployment_name=settings.AZURE_OPENAI_CHAT_DEPLOYMENT_NAME,
+        endpoint=settings.AZURE_OPENAI_ENDPOINT
     )
 
     #MCP plugin need to be initialized using an async __aenter__ method and disposed using __aexit__

@@ -48,8 +48,8 @@ class Settings(BaseSettings):
   
     # Azure AI services configuration
     # maps to environment variables described by the user
-    AZURE_OPENAI_SERVICE: str | None = Field(default=None)
-    AZURE_OPENAI_CHATGPT_DEPLOYMENT: str = Field(default="gpt-4o")
+    AZURE_OPENAI_ENDPOINT: str | None = Field(default=None)
+    AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: str = Field(default="gpt-4o")
     AZURE_DOCUMENT_INTELLIGENCE_SERVICE: str | None = Field(default=None)
 
     # Azure services
