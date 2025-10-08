@@ -7,11 +7,17 @@ FROM python:3.11-bullseye
 # Set work directory
 WORKDIR /app
 
+# Install pipx and use it to install uv
+RUN pip install --no-cache-dir pipx \
+	&& pipx ensurepath \
+	&& pipx install uv
+ENV PATH="/root/.local/bin:$PATH"
 
-# Install Python dependencies
-COPY requirements.txt ./
-RUN pip install --upgrade pip \
-	&& pip install -r requirements.txt
+
+# Install pinned dependencies using uv pip
+COPY pyproject.toml ./
+COPY uv.lock ./
+RUN uv pip install --system -r pyproject.toml --prerelease=allow
 
 # Copy application code
 COPY app ./app
