@@ -6,9 +6,6 @@ resolution-markers = [
     "python_full_version < '3.13'",
 ]
 
-[options]
-prerelease-mode = "allow"
-
 [[package]]
 name = "agent-framework-azure-ai"
 version = "1.0.0b251001"
@@ -339,6 +336,8 @@ dependencies = [
     { name = "agent-framework-azure-ai" },
     { name = "azure-ai-documentintelligence" },
     { name = "azure-identity" },
+    { name = "azure-monitor-opentelemetry" },
+    { name = "azure-monitor-opentelemetry-exporter" },
     { name = "azure-storage-blob" },
     { name = "dependency-injector" },
     { name = "fastapi", extra = ["all"] },
@@ -357,6 +356,8 @@ requires-dist = [
     { name = "agent-framework-azure-ai" },
     { name = "azure-ai-documentintelligence", specifier = "==1.0.1" },
     { name = "azure-identity", specifier = "==1.24.0" },
+    { name = "azure-monitor-opentelemetry", specifier = ">=1.8.1" },
+    { name = "azure-monitor-opentelemetry-exporter", specifier = ">=1.0.0b42" },
     { name = "azure-storage-blob", specifier = "==12.26.0" },
     { name = "dependency-injector", specifier = "==4.48.1" },
     { name = "fastapi", extras = ["all"], specifier = "==0.116.1" },

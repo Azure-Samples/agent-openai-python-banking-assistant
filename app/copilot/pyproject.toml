@@ -13,7 +13,9 @@ dependencies = [
     "azure-storage-blob==12.26.0",
     "azure-ai-documentintelligence==1.0.1",
     "dependency-injector==4.48.1",
-    "agent-framework-azure-ai"
+    "agent-framework-azure-ai",
+    "azure-monitor-opentelemetry-exporter>=1.0.0b42",
+    "azure-monitor-opentelemetry>=1.8.1",
 ]
 
 
