@@ -1,0 +1,50 @@
+# =============================================================================
+# .jumpboxignore — Patterns to exclude from SCP transfer to the jump box
+#
+# Syntax (similar to .gitignore):
+#   - Lines starting with # are comments
+#   - Blank lines are ignored
+#   - Patterns ending with / match directories only
+#   - Patterns with * or ? are glob wildcards
+#   - All other patterns match both files and directories by name
+#   - Negation (!) is not supported
+# =============================================================================
+
+# ─── Version control & IDE ───────────────────────────────────────────────────
+.git/
+.github/
+.vs/
+.vscode/
+.idea/
+
+# ─── Azure & environment ────────────────────────────────────────────────────
+.azure/
+.env
+.env.*
+
+# ─── Python ─────────────────────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+
+# ─── Node.js ────────────────────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+.next/
+
+# ─── Build & temporary ──────────────────────────────────────────────────────
+.temp/
+*.tmp
+*.log
+
+# ─── Project folders not needed on the jump box ─────────────────────────────
+infra/
+docs/
+spec/
+requirements/
+samples/

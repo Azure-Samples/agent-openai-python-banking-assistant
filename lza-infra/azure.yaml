@@ -1,0 +1,108 @@
+# Post-provision hook design:
+#   The app deploy orchestrator (postprovision.ps1) runs last and handles
+#   network-isolated deployment via the jump box when NETWORK_ISOLATION=True.
+#   Service internal FQDNs are passed as arguments for health probing after deploy.
+#
+# Env var resolution: every ${VAR} must map to a Bicep output in main.bicep.
+
+name: multi-agent-home-banking-assistant
+
+metadata:
+  template: multi-agent-home-banking-assistant@0.1.0
+
+infra:
+  provider: bicep
+  path: .
+  module: main
+
+services:
+  backend:
+    project: ../app/backend
+    host: containerapp
+    language: python
+    docker:
+      path: ./Dockerfile
+      remoteBuild: true
+    env:
+      PROFILE: "prod"
+      AGENTS_TYPE: "foundry_v2"
+      AZURE_AI_PROJECT_ENDPOINT: ${AI_FOUNDRY_PROJECT_ENDPOINT}
+      AZURE_AI_MODEL_DEPLOYMENT_NAME: "gpt-4.1"
+      AZURE_OPENAI_ENDPOINT: ${AI_FOUNDRY_OPENAI_ENDPOINT}
+      AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: "gpt-4.1"
+      AZURE_DOCUMENT_INTELLIGENCE_SERVICE: ${DOCUMENT_INTELLIGENCE_NAME}
+      AZURE_STORAGE_ACCOUNT: ${STORAGE_ACCOUNT_NAME}
+      AZURE_STORAGE_CONTAINER: "content"
+      AZURE_COSMOSDB_ENDPOINT: ${COSMOS_DB_ENDPOINT}
+      AZURE_COSMOSDB_DATABASE: "chatkit"
+      ACCOUNT_MCP_URL: ${ACCOUNT_APP_INTERNAL_FQDN}/mcp
+      TRANSACTION_MCP_URL: ${TRANSACTION_APP_INTERNAL_FQDN}/mcp
+      PAYMENT_MCP_URL: ${PAYMENT_APP_INTERNAL_FQDN}
+      APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
+
+  account:
+    project: ../app/business-api/python/account
+    host: containerapp
+    language: python
+    docker:
+      path: ./Dockerfile
+      remoteBuild: true
+    env:
+      PROFILE: "prod"
+      APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
+
+  transaction:
+    project: ../app/business-api/python/transaction
+    host: containerapp
+    language: python
+    docker:
+      path: ./Dockerfile
+      remoteBuild: true
+    env:
+      PROFILE: "prod"
+      APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
+
+  payment:
+    project: ../app/business-api/python/payment
+    host: containerapp
+    language: python
+    docker:
+      path: ./Dockerfile
+      remoteBuild: true
+    env:
+      PROFILE: "prod"
+      TRANSACTIONS_API_SERVER_URL: ${TRANSACTION_APP_INTERNAL_FQDN}
+      APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
+
+  web:
+    project: ../app/frontend/banking-web
+    host: containerapp
+    language: js
+    docker:
+      path: ./Dockerfile
+      remoteBuild: true
+    env:
+      APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
+      ACCOUNT_API_BASE_URL: ${ACCOUNT_APP_INTERNAL_FQDN}
+      TRANSACTION_API_BASE_URL: ${TRANSACTION_APP_INTERNAL_FQDN}
+      CHATKIT_BASE_URL: ${BACKEND_APP_EXTERNAL_FQDN}
+
+hooks:
+  preprovision:
+    # Ensures BASTION_ALLOWED_SOURCE_IP is set; auto-detects caller's public IP if missing.
+    - shell: pwsh
+      run: hooks/preprovision.ps1
+      interactive: false
+      continueOnError: false
+
+  postprovision:
+    # ── App deploy orchestrator (must run LAST) ─────────────────────────────
+    # Handles network-isolated deployment via jump box + azd deploy.
+    # Internal FQDNs are passed as arguments for health probing after deploy.
+    # The script appends /health to each URL. Empty = skip health probes.
+    - shell: pwsh
+      run: >-
+        hooks/postprovision.ps1
+        ${WEB_APP_INTERNAL_FQDN}
+      interactive: true
+      continueOnError: false
