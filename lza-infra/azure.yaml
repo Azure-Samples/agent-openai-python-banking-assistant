@@ -25,7 +25,7 @@ services:
       remoteBuild: true
     env:
       PROFILE: "prod"
-      AGENTS_TYPE: "foundry_v2"
+      AGENTS_TYPE: "azure_chat"
       AZURE_AI_PROJECT_ENDPOINT: ${AI_FOUNDRY_PROJECT_ENDPOINT}
       AZURE_AI_MODEL_DEPLOYMENT_NAME: "gpt-4.1"
       AZURE_OPENAI_ENDPOINT: ${AI_FOUNDRY_OPENAI_ENDPOINT}
